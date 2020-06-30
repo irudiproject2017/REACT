@@ -3,7 +3,6 @@ import './App.css'
 import { SearchAndDeleteComponent } from './components/SearchAndDeleteComponent';
 
 const App: React.FC = () => {
-
   return (
     <div className="App">
       <SearchAndDeleteComponent />

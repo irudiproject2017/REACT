@@ -3,40 +3,38 @@ import axios from "axios";
 import ErrorComponent from "./ErrorComponent";
 import TableComponent from "./TableComponent";
 import InputComponent from "./InputComponent";
+import base_url from './bootApi'
 
 export const SearchAndDeleteComponent: React.FC = () => {
-  const [data, setData] = useState([]);
-  const [id, setId] = useState("");
-  const [isNodata, setIsNodata] = useState(false);
+  const [data, setData] = useState([]); // FetchAll Data
+  const [id, setId] = useState("");    // FetchByID Data
+  const [isNodata, setIsNodata] = useState(false); // Error
 
+
+  //Axios is a promise-based HTTP client that works both in the browser and in a node. js environment. 
+  //It basically provides a single API for dealing with XMLHttpRequest s and node's http interface.
   /*Fetch All*/
-  const fetchAllData = () => {
-    axios
-      .get("https://fakerestapi.azurewebsites.net/api/Authors")
-      .then(result => {
-        setData(result.data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  const fetchAllData = async () => {
+    try {
+      const res = await axios.get(`${base_url}`)
+      setData(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
     /*Fetch By ID*/
-    const fetchByIdData = () => {
+    const fetchByIdData = async () => {
       const a = [] as any
-      axios
-        .get(`https://fakerestapi.azurewebsites.net/api/Authors/${id}`)
-        .then(result => {
-          console.log();
-          a.push(result.data);
-          console.log(a);
-          setData(a);
-        })
-        .catch(err => {
-          setIsNodata(true);
-          console.log("invalid data");
-        });
+      try {
+        const res = await axios.get(`${base_url}/${id}`);
+        a.push(res.data);
+        setData(a);
+      } catch (err) {
+        setIsNodata(true);
+        console.log("invalid data");
+      }
     };
     if (id) fetchByIdData();
     else {
@@ -50,19 +48,21 @@ export const SearchAndDeleteComponent: React.FC = () => {
     setIsNodata(false);
   };
 
+  /*Delete By ID*/
+  const deleteById = async (id: string) => {
+    try {
+      const res = await axios.delete(`${base_url}/${id}`);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   document.addEventListener("click", function (event) {
     const id = (event.target as HTMLInputElement).id;
     if ((event.target as HTMLInputElement).className === 'delete-table') {
       console.log(id)
-      /*Delete By ID*/
-      axios
-        .delete(`https://fakerestapi.azurewebsites.net/api/Authors/${id}`)
-        .then(result => {
-          console.log(result);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      deleteById(id)
     }
 
     event.stopImmediatePropagation();
