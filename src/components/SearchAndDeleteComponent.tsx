@@ -3,12 +3,12 @@ import axios from "axios";
 import ErrorComponent from "./ErrorComponent";
 import TableComponent from "./TableComponent";
 import InputComponent from "./InputComponent";
-import base_url from './bootApi'
+import base_url from './bootApi';
 
-export const SearchAndDeleteComponent: React.FC = () => {
-  const [data, setData] = useState([]); // FetchAll Data
-  const [id, setId] = useState("");    // FetchByID Data
-  const [isNodata, setIsNodata] = useState(false); // Error
+export const SearchAndDeleteComponent = () => {
+  const [data, setData] = useState([]); // FetchAll Data with localstate
+  const [id, setId] = useState("");    // FetchByID Data with localstate
+  const [isNodata, setIsNodata] = useState(false); // Error with localstate
 
 
   //Axios is a promise-based HTTP client that works both in the browser and in a node. js environment. 
@@ -22,11 +22,11 @@ export const SearchAndDeleteComponent: React.FC = () => {
       console.log(err);
     }
   };
-
+  // useEffect runs after every render cause performance issue so adding dependency array
   useEffect(() => {
     /*Fetch By ID*/
     const fetchByIdData = async () => {
-      const a = [] as any
+      let a = [] as any
       try {
         const res = await axios.get(`${base_url}/${id}`);
         a.push(res.data);
@@ -40,7 +40,7 @@ export const SearchAndDeleteComponent: React.FC = () => {
     else {
       fetchAllData();
     }
-  }, [id]);
+  }, [id]); // Empty array dep means initial render  
 
   const settingId = () => {
     const Id = (document.getElementById("search") as HTMLInputElement).value;
@@ -48,11 +48,11 @@ export const SearchAndDeleteComponent: React.FC = () => {
     setIsNodata(false);
   };
 
-  /*Delete By ID*/
   const deleteById = async (id: string) => {
     try {
       const res = await axios.delete(`${base_url}/${id}`);
       console.log(res);
+
     } catch (err) {
       console.log(err);
     }
@@ -62,6 +62,7 @@ export const SearchAndDeleteComponent: React.FC = () => {
     const id = (event.target as HTMLInputElement).id;
     if ((event.target as HTMLInputElement).className === 'delete-table') {
       console.log(id)
+      /*Delete By ID*/
       deleteById(id)
     }
 
